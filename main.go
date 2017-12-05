@@ -45,6 +45,7 @@ func concurrentRecur() time.Duration {
 	var wg sync.WaitGroup
 
 	dir, _ := os.Getwd()
+	wg.Add(1)
 	concurrentRecursiveReadDir(dir, &wg)
 
 	wg.Wait()
@@ -53,7 +54,6 @@ func concurrentRecur() time.Duration {
 
 func concurrentRecursiveReadDir(dir string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	wg.Add(1)
 
 	log.Printf("ConcurrentRecur:\t%s\n", dir)
 	files, err := ioutil.ReadDir(dir)
@@ -66,6 +66,7 @@ func concurrentRecursiveReadDir(dir string, wg *sync.WaitGroup) {
 	for _, file := range files {
 		if file.IsDir() {
 			newDir := fmt.Sprintf("%s/%s", dir, file.Name())
+			wg.Add(1)
 			go concurrentRecursiveReadDir(newDir, wg)
 		}
 	}
